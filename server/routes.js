@@ -2,7 +2,7 @@ export default function (server) {
 
   // We can use this method, since we have set the require in the index.js to
   // elasticsearch. So we can access the elasticsearch plugins safely here.
-  let call = server.plugins.elasticsearch.callWithRequest;
+  const { callWithRequest } = server.plugins.elasticsearch.getCluster('data');
 
   // Register a GET API at /api/elasticsearch_status/indices that returns
   // an array of all indices in the elasticsearch. The server is actually an
@@ -28,7 +28,7 @@ export default function (server) {
       // (it should contain the data you would have also passed to the client directly).
       // The method returns a promise, which will be resolved with the data returned
       // from Elasticsearch.
-      call(req, 'cluster.state').then(function (response) {
+      callWithRequest(req, 'cluster.state').then(function (response) {
         // Return just the names of all indices to the client.
         reply(
           Object.keys(response.metadata.indices)
@@ -44,7 +44,7 @@ export default function (server) {
     path: '/api/elasticsearch_status/index/{name}',
     method: 'GET',
     handler(req, reply) {
-      call(req, 'cluster.state', {
+      callWithRequest(req, 'cluster.state', {
         metric: 'metadata',
         index: req.params.name
       }).then(function (response) {
