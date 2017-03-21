@@ -44,11 +44,22 @@ export default function (server) {
     path: '/api/elasticsearch_status/index/{name}',
     method: 'GET',
     handler(req, reply) {
-      callWithRequest(req, 'cluster.state', {
-        metric: 'metadata',
-        index: req.params.name
-      }).then(function (response) {
-        reply(response.metadata.indices[req.params.name]);
+      callWithRequest(req, 'search', {
+  index: 'topbeat-2017.03.06',
+  type: 'filesystem',
+  body: {
+  "query": {
+    "match": {
+      "beat.hostname": {
+        "query": "Wangs-MacBook-Air.local",
+        "type": "phrase"
+      }
+    }
+  }
+}
+}).then(function (response) {
+  console.trace(response);
+        reply(response.hits.hits);
       });
     }
   });
