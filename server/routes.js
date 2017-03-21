@@ -30,6 +30,7 @@ export default function (server) {
       // from Elasticsearch.
       callWithRequest(req, 'cluster.state').then(function (response) {
         // Return just the names of all indices to the client.
+        console.trace(response.metadata.indices);
         reply(
           Object.keys(response.metadata.indices)
         );
